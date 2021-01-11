@@ -61,8 +61,13 @@ module.exports = function(app) {
     fs.writeFile("./db/db.json", JSON.stringify(notesData), function(err){
       if(err) throw err;
       res.json(notesData);
-    });
-    
-  
+    });  
+  });
+  // Delete note
+  app.post("/api/notes", function(req, res) {
+    // Empty out notes array of data
+    notesData.id.empty();
+
+    res.json({ ok: true });
   });
 };
