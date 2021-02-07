@@ -1,16 +1,10 @@
-// ===============================================================================
-// LOAD DATA
-// We are linking our routes to a series of "data" sources.
-// These data sources hold arrays of information on notes-data, waitinglist, etc.
-// ===============================================================================
+
+// Linking routes to data sources.
 
 var notesData = require("../db/db.json");
 const shortid = require('shortid');
 const fs = require("fs");
 
-// ===============================================================================
-// ROUTING
-// ===============================================================================
 
 module.exports = function(app) {
   // API GET Requests
@@ -31,20 +25,6 @@ module.exports = function(app) {
   // Then the server saves the data to the tableData array)
   // ---------------------------------------------------------------------------
 
-  app.post("../assets/notes.html", function(req, res) {
-    // Note the code here. Our "server" will respond to requests and let users know if they have a table or not.
-    // It will do this by sending out the value "true" have a table
-    // req.body is available since we're using the body parsing middleware
-    if (tableData.length < 5) {
-      notesData.push(req.body);
-      res.json(true);
-    }
-    else {
-      waitListData.push(req.body);
-      res.json(false);
-    }
-  });
-
   // ---------------------------------------------------------------------------
   // I added this below code so you could clear out the table while working with the functionality.
   // Don"t worry about it!
@@ -64,10 +44,21 @@ module.exports = function(app) {
     });  
   });
   // Delete note
-  app.post("/api/notes", function(req, res) {
+  app.delete("/api/notes/:id", function(req, res) {
     // Empty out notes array of data
-    notesData.id.empty();
+    console.log(req.params.id);
+    console.log(notesData);
+    let temp = []
 
-    res.json({ ok: true });
+    for(let i = 0; i < notesData.length; i++) {
+      if(notesData[i].id !== req.params.id) {
+        temp.push(notesData[i]) 
+        console.log(temp);
+      }
+    }
+    fs.writeFile("./db/db.json", JSON.stringify(temp), function(err){
+      if(err) throw err;
+      res.json({ ok: true });
+    }); 
   });
 };
